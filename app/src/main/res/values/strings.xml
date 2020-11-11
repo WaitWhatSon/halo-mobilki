@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Quiz</string>
+    <string name="button_true">Prawda</string>
+    <string name="button_false">Fałsz</string>
+    <string name="button_next">Następne</string>
+
+    <string name="question1">MSP430 to rodzina mikrokontrolerów zaprojektowana i produkowana przez firmę Texas Instruments.</string>
+    <string name="question2">Rodzina tych mikrokontrolerów jest niezgodna z architekturą Von Neumana.</string>
+    <string name="question3">Mikrokontrolery te charakteryzuje niski pobór energii dzięki architekturze procesora i budowie układów peryferyjnych.</string>
+    <string name="question4">Texas Instruments Inc. zostało założone w 1930 roku.</string>
+    <string name="question5">W laboratorium 102 jest zawsze ciepło i przyjemnie.</string>
+    <string name="correct_answer">Dobrze.</string>
+    <string name="incorrect_answer">Niedobrze.</string>
+
+
+</resources>
