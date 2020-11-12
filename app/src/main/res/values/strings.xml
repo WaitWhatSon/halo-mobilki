@@ -12,5 +12,10 @@
     <string name="correct_answer">Dobrze.</string>
     <string name="incorrect_answer">Niedobrze.</string>
 
+    <string name="hint_question_text_view">Czy na pewno chcesz zobaczyć odpowiedź?</string>string>
+    <string name="button_show_hint">Pokaż odpowiedź.</string>string>
+    <string name="answer_text_view">Odpowiedź</string>
+    <string name="hint_button">Odpowiedź</string>
+    <string name="answer_was_shown">Oszukujesz! Odpowiedź była już wyświetlona.</string>
 
 </resources>
