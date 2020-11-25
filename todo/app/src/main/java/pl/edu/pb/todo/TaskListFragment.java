@@ -8,10 +8,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,11 +23,12 @@ import java.util.List;
 public class TaskListFragment extends Fragment {
 
     public static final String KEY_EXTRA_TASK_ID = "extraTaskId";
+    public static final String SUBTITLE_VISIBLE = "extraVisibleBoolean";
 
     private RecyclerView recyclerView;
     private TaskAdapter adapter = null;
 
-    private boolean subtitleVisible; //???????
+    private boolean subtitleVisible;
 
     @Nullable
     @Override
@@ -57,13 +60,14 @@ public class TaskListFragment extends Fragment {
         {
             adapter.notifyDataSetChanged();
         }
-
+        updateSubtitle();
     }
 
     private class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView nameTextView;
         private TextView dateTextView;
+        private ImageView iconImageView;
         private Task task;
 
         public TaskHolder(LayoutInflater inflater, ViewGroup parent)
@@ -73,6 +77,7 @@ public class TaskListFragment extends Fragment {
 
             nameTextView = itemView.findViewById(R.id.task_item_name);
             dateTextView = itemView.findViewById(R.id.task_item_date);
+            iconImageView = itemView.findViewById(R.id.icon_image_view);
 
         }
 
@@ -80,6 +85,16 @@ public class TaskListFragment extends Fragment {
             this.task = task;
             nameTextView.setText(task.getName());
             dateTextView.setText(task.getDate().toString());
+
+            if (task.isDone())
+            {
+                iconImageView.setImageResource(R.drawable.ic_check_box);
+            }
+            else
+            {
+                iconImageView.setImageResource(R.drawable.ic_check_box_outline);
+            }
+
 
         }
 
@@ -96,16 +111,75 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater);
+        menuInflater.inflate(R.menu.fragment_task_menu, menu);
+        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+        if (subtitleVisible)
+        {
+            subtitleItem.setTitle(R.string.hide_subtitle);
+        }
+        else
+        {
+            subtitleItem.setTitle(R.string.show_subtitle);
+        }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        return super.onOptionsItemSelected(menuItem);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.new_task:
+                Task task = new Task();
+                TaskStorage.getInstance().addTask(task);
+                Intent intent = new Intent(getActivity(),MainActivity.class);
+                intent.putExtra(TaskListFragment.KEY_EXTRA_TASK_ID, task.getId());
+                startActivity(intent);
+                return true;
+            case R.id.show_subtitle:
+                subtitleVisible = !subtitleVisible;
+                getActivity().invalidateOptionsMenu();
+                updateSubtitle();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        if (savedInstanceState != null)
+        {
+            subtitleVisible = savedInstanceState.getBoolean(SUBTITLE_VISIBLE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SUBTITLE_VISIBLE, subtitleVisible);
     }
 
     public void updateSubtitle()
     {
-        // ?????????
+        TaskStorage taskStorage = TaskStorage.getInstance();
+        List<Task> tasks = taskStorage.getTasks();
+        int todoTasksCount = 0;
+        for (Task task : tasks)
+        {
+            if (!task.isDone())
+            {
+                todoTasksCount++;
+            }
+        }
+        String subtitle = getString(R.string.subtitle_format, todoTasksCount);
+        if (!subtitleVisible)
+        {
+            subtitle = null;
+        }
+        AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
+        appCompatActivity.getSupportActionBar().setSubtitle(subtitle);
+
     }
 
     private class TaskAdapter extends RecyclerView.Adapter<TaskHolder> {
